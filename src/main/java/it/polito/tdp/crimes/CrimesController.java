@@ -85,10 +85,11 @@ public class CrimesController {
     		return;
     	}
     	List<String> percorso = this.model.calcolaPercorso(arco);
-    	this.txtResult.appendText("Percorso:\n");
+    	this.txtResult.appendText("\nPercorso:\n");
     	for(String s : percorso) {
     		this.txtResult.appendText(s + "\n");
     	}
+    	this.txtResult.appendText("\nPeso cammino: " + this.model.getPesoBest());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

@@ -128,4 +128,8 @@ public class Model {
 		}
 		return p;
 	}
+
+	public Double getPesoBest() {
+		return pesoBest;
+	}
 }
