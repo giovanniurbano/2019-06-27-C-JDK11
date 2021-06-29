@@ -6,8 +6,10 @@ package it.polito.tdp.crimes;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,6 +58,11 @@ public class CrimesController {
     	}
     	String msg = this.model.creaGrafo(cat, d);
     	this.txtResult.appendText(msg);
+    	
+    	List<Adiacenza> inferioriAMediano = this.model.getInferioriMediano();
+    	this.txtResult.appendText("\nArchi con peso inferiore al peso mediano:\n");
+    	for(Adiacenza a : inferioriAMediano)
+    		this.txtResult.appendText(a + "\n");
     }
 
     @FXML

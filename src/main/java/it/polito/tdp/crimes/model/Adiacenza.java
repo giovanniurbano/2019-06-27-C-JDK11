@@ -30,5 +30,8 @@ public class Adiacenza {
 		this.peso = peso;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return tipo1 + " - " + tipo2 + " (" + peso + ")";
+	}
 }

@@ -1,6 +1,7 @@
 package it.polito.tdp.crimes.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jgrapht.Graph;
@@ -14,6 +15,7 @@ public class Model {
 	private EventsDao dao;
 	private Graph<String, DefaultWeightedEdge> grafo;
 	private List<String> vertici;
+	private List<Adiacenza> archi;
 	
 	public Model() {
 		this.dao = new EventsDao();
@@ -35,11 +37,42 @@ public class Model {
 		Graphs.addAllVertices(this.grafo, this.vertici);
 		
 		//archi
-		List<Adiacenza> archi = this.dao.getAdiacenze(cat, data, this.vertici);
+		archi = this.dao.getAdiacenze(cat, data, this.vertici);
 		for(Adiacenza a : archi) {
 			Graphs.addEdge(this.grafo, a.getTipo1(), a.getTipo2(), a.getPeso());
 		}
 		
 		return String.format("Grafo creato con %d vertici e %d archi\n", this.grafo.vertexSet().size(), this.grafo.edgeSet().size());
+	}
+
+	public List<Adiacenza> getInferioriMediano() {
+		Double pesoMax = this.calcolaPesoMax();
+		Double pesoMin = this.calcolaPesoMin();
+		
+		Double mediano = (pesoMax + pesoMin)/2;
+		List<Adiacenza> inferiori = new ArrayList<Adiacenza>();
+		for(Adiacenza a : archi)
+			if(a.getPeso() < mediano)
+				inferiori.add(a);
+		
+		return inferiori;
+	}
+
+	private Double calcolaPesoMin() {
+		Double min = 1000.0;
+		for(Adiacenza a : archi)
+			if(a.getPeso() < min)
+				min = a.getPeso();
+		
+		return min;
+	}
+
+	private Double calcolaPesoMax() {
+		Double max = 0.0;
+		for(Adiacenza a : archi)
+			if(a.getPeso() > max)
+				max = a.getPeso();
+		
+		return max;
 	}
 }
