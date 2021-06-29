@@ -47,6 +47,15 @@ public class CrimesController {
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Crea grafo...\n");
+    	String cat = this.boxCategoria.getValue();
+    	LocalDate d = this.boxGiorno.getValue();
+    	
+    	if(d == null || cat == null) {
+    		this.txtResult.appendText("Inserire categoria e giorno!");
+    		return;
+    	}
+    	String msg = this.model.creaGrafo(cat, d);
+    	this.txtResult.appendText(msg);
     }
 
     @FXML

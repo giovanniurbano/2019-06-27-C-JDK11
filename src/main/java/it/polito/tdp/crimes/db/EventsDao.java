@@ -1,6 +1,7 @@
 package it.polito.tdp.crimes.db;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -97,6 +98,32 @@ public class EventsDao {
 			
 			while(res.next()) {
 				result.add(res.getString("offense_category_id"));
+			}
+			
+			conn.close();
+			return result ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	public List<String> getVertici(String cat, LocalDate data) {
+		final String sql = "SELECT DISTINCT offense_type_id "
+				+ "FROM events "
+				+ "WHERE offense_category_id = ? "
+				+ "AND DATE(reported_date) = ?";
+		List<String> result = new LinkedList<String>();
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setString(1, cat);
+			st.setDate(2, Date.valueOf(data));
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				result.add(res.getString("offense_type_id"));
 			}
 			
 			conn.close();
