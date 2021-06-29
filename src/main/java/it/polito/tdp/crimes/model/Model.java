@@ -17,6 +17,9 @@ public class Model {
 	private List<String> vertici;
 	private List<Adiacenza> archi;
 	
+	private List<String> migliore;
+	private Double pesoBest;
+	
 	public Model() {
 		this.dao = new EventsDao();
 	}
@@ -43,6 +46,10 @@ public class Model {
 		}
 		
 		return String.format("Grafo creato con %d vertici e %d archi\n", this.grafo.vertexSet().size(), this.grafo.edgeSet().size());
+	}
+
+	public Graph<String, DefaultWeightedEdge> getGrafo() {
+		return grafo;
 	}
 
 	public List<Adiacenza> getInferioriMediano() {
@@ -74,5 +81,51 @@ public class Model {
 				max = a.getPeso();
 		
 		return max;
+	}
+
+	public List<String> calcolaPercorso(Adiacenza arco) {
+		this.migliore = new ArrayList<String>();
+		String partenza = arco.getTipo1();
+		String arrivo = arco.getTipo2();
+		this.pesoBest = 0.0;
+		
+		List<String> parziale = new ArrayList<String>();
+		parziale.add(partenza);
+		
+		this.cerca(parziale, arrivo, 1);
+		
+		return migliore;
+	}
+
+	private void cerca(List<String> parziale, String arrivo, int L) {
+		//casi terminali
+		if(parziale.get(parziale.size()-1).equals(arrivo)) {
+			Double p = this.pesoCammino(parziale);
+			if(p > this.pesoBest) {
+				this.migliore = new ArrayList<String>(parziale);
+				this.pesoBest = p;
+			}
+			return;
+		}
+		if(L == this.vertici.size()) {
+			return;
+		}
+		
+		List<String> vicini = Graphs.neighborListOf(this.grafo, parziale.get(parziale.size()-1));
+		for(String vertice : vicini) {
+			if(!parziale.contains(vertice)) {
+				parziale.add(vertice);
+				this.cerca(parziale, arrivo, L+1);
+				parziale.remove(parziale.size()-1);
+			}
+		}
+	}
+
+	private Double pesoCammino(List<String> parziale) {
+		Double p = 0.0;
+		for(int i=1; i<parziale.size(); i++) {
+			p += this.grafo.getEdgeWeight(this.grafo.getEdge(parziale.get(i-1), parziale.get(i)));
+		}
+		return p;
 	}
 }
