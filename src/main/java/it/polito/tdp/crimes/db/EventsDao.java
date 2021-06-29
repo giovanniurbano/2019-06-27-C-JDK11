@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Event;
 
 
@@ -124,6 +126,40 @@ public class EventsDao {
 			
 			while(res.next()) {
 				result.add(res.getString("offense_type_id"));
+			}
+			
+			conn.close();
+			return result ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	public List<Adiacenza> getAdiacenze(String cat, LocalDate data, List<String> vertici) {
+		final String sql = "SELECT e1.offense_type_id AS id1, e2.offense_type_id AS id2, COUNT(DISTINCT e1.precinct_id) AS peso "
+				+ "FROM events e1, events e2 "
+				+ "WHERE e1.incident_id <> e2.incident_id "
+				+ "AND e1.offense_type_id < e2.offense_type_id "
+				+ "AND e1.precinct_id = e2.precinct_id "
+				+ "AND date(e1.reported_date) = date(e2.reported_date) AND date(e1.reported_date) = ? "
+				+ "AND e1.offense_category_id = e2.offense_category_id AND e1.offense_category_id = ? "
+				+ "GROUP BY id1, id2";
+		List<Adiacenza> result = new LinkedList<>();
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setDate(1, Date.valueOf(data));
+			st.setString(2, cat);
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				if(vertici.contains(res.getString("id1")) && vertici.contains(res.getString("id2")) && !res.getString("id1").equals(res.getString("id2"))) {
+					Adiacenza a = new Adiacenza(res.getString("id1"), res.getString("id2"), res.getDouble("peso"));
+					result.add(a);
+				}
 			}
 			
 			conn.close();
